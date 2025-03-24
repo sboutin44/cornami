@@ -55,6 +55,9 @@ int eval(Node *root)
     }
     else if (current->kind == OPERATOR)
     {
+        // We recursively go deeper in the tree by calling eval on the left and right 
+        // nodes, and then we apply the operator by calling our array of function pointers
+        // by calling `funcs[current->op] ( a , b )` .
         return funcs[current->op](eval(current->left), eval(current->right));
     }
 }
