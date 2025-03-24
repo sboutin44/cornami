@@ -62,6 +62,11 @@ int Node::eval()
         // by calling `funcs[current->op] ( a , b )` .
         return funcs[current->op](current->left->eval(), current->right->eval());
     }
+    else
+    {
+        printf("Unexpected kind value: %d\n", current->kind);
+        exit(1);
+    }
 }
 
 int main()
