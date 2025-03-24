@@ -31,9 +31,9 @@ Example 1:
 ```
          -
         / \
-        +  c=2
-        / \
-     a=5   b=3
+       +  c=2
+      / \
+   a=5   b=3
 ```
 representing the expression (5+3) - 2.
 
@@ -41,11 +41,11 @@ Example 2:
 ```
          +               n0
         / \
-        3  *             n1 n2
+       3   *             n1 n2
           / \
          +   2           n3 n4
         / \ 
-        5 9              n5 n6
+       5   9              n5 n6
 ```
 representing 3 + ( (5+9) * 2 ).
 
