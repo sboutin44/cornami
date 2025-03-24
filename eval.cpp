@@ -34,21 +34,23 @@ static fn funcs[] = {add, sub, mul, divide};
 
 class Node
 {
-  public:
     enum KIND kind;
     Node *left;
     Node *right;
     int value;
     enum OPERATOR op;
     
-    Node() {}
-    Node(enum KIND k, int v) : kind(k), value(v), left(nullptr), right(nullptr) {}   // Constructor for operands
-    Node(enum KIND k, enum OPERATOR o, Node* l, Node* r) : kind(k), op(o), left(l), right(r) {}             // Constructor for operators
+public:
+    // Constructor for operands
+    Node(enum KIND k, int v) : kind(k), value(v), left(nullptr), right(nullptr) {}
+    // Constructor for operators
+    Node(enum KIND k, enum OPERATOR o, Node* l, Node* r) : kind(k), op(o), left(l), right(r) {}
+    int eval();
 };
 
-int eval(Node *root)
+int Node::eval()
 {
-    Node *current = root;
+    Node *current = this;
     if (current->kind == OPERAND)
     {
         return current->value;
@@ -58,7 +60,7 @@ int eval(Node *root)
         // We recursively go deeper in the tree by calling eval on the left and right 
         // nodes, and then we apply the operator by calling our array of function pointers
         // by calling `funcs[current->op] ( a , b )` .
-        return funcs[current->op](eval(current->left), eval(current->right));
+        return funcs[current->op](current->left->eval(), current->right->eval());
     }
 }
 
@@ -80,7 +82,7 @@ int main()
     Node minus(OPERATOR, SUB,&plus,&c);
 
     // Evaluate the tree
-    int e0 = eval(&minus);
+    int e0 = minus.eval();
     printf("Evaluation of example 1: (5+3) - 2 = %d\n", e0);
 
     /** Example 2: 
@@ -103,7 +105,7 @@ int main()
     Node n0(OPERATOR, ADD,&n1,&n2);
 
     // Evaluate the tree
-    int e1 = eval(&n0);
+    int e1 = n0.eval();
     printf("Evaluation of example 2: 3 + ( (5+9) * 2 ) = %d\n", e1);
 
     return 0;
