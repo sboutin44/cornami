@@ -1,7 +1,7 @@
 # Cornami 
 
 ## Compiler Intern Exercise
-This repository contains my answer to the following exercice:
+This repository contains my answer to the following exercise:
 
 A Tree represents an object with left and right nodes, as well as an integer value and a kind enumeration saying if it is an operator or operand. The tree represents an expression of the form (a+b) - c, and can be represented like this:
 ```
@@ -13,7 +13,7 @@ A Tree represents an object with left and right nodes, as well as an integer val
 ```
 where a,b and c are integers, - and + are the operators.
 
-The exerice consists in implementing the function that evaluates the tree and returns the computation (a+b) - c: 
+The exercise consists in implementing the function that evaluates the tree and returns the computation (a+b) - c: 
 ```
 int eval(Tree* obj);
 ```
