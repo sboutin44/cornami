@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// Define the operator functions, which is how we will apply 
+// them when evaluating the tree.
 int add(int a, int b) {return a + b;}
 int sub(int a, int b) {return a - b;}
 int mul(int a, int b) {return a * b;}
@@ -20,31 +22,23 @@ enum KIND
     OPERATOR
 };
 
-enum OPERATOR
-{
-    ADD,
-    SUB,
-    MUL,
-    DIV
-};
-
-// Mapping enumeration operators to their corresponding function:
-typedef int (*fn)(int, int);
-static fn funcs[] = {add, sub, mul, divide};
-
 class Node
 {
     enum KIND kind;
     Node *left;
     Node *right;
     int value;
-    enum OPERATOR op;
-    
+
+    // Function pointers are used here for ease of use in the eval function.
+    int (*operatorFunctionPointer)(int, int);  
+
 public:
     // Constructor for operands
-    Node(enum KIND k, int v) : kind(k), value(v), left(nullptr), right(nullptr) {}
+    Node(enum KIND k, int v) : 
+        kind(k), value(v), left(nullptr), right(nullptr) {}
     // Constructor for operators
-    Node(enum KIND k, enum OPERATOR o, Node* l, Node* r) : kind(k), op(o), left(l), right(r) {}
+    Node(enum KIND k, int (*functionName)(int, int), Node* l, Node* r) : 
+        kind(k), operatorFunctionPointer(functionName), left(l), right(r) {}
     int eval();
 };
 
@@ -57,10 +51,12 @@ int Node::eval()
     }
     else if (current->kind == OPERATOR)
     {
-        // We recursively go deeper in the tree by calling eval on the left and right 
-        // nodes, and then we apply the operator by calling our array of function pointers
-        // by calling `funcs[current->op] ( a , b )` .
-        return funcs[current->op](current->left->eval(), current->right->eval());
+        // We recursively traverse the tree by calling "eval" on the left and right 
+        // nodes, and then apply the operator by calling the function it points to.
+        return current->operatorFunctionPointer(
+            current->left->eval(),
+            current->right->eval() 
+        );
     }
     else
     {
@@ -71,7 +67,9 @@ int Node::eval()
 
 int main()
 {
-    /** Example 1: 
+    /** -----------------------------------
+        Example 1:
+        -----------------------------------
         Expression: (5+3) - 2
         Tree:
          -
@@ -80,17 +78,27 @@ int main()
         / \
     a=5   b=3
     */
+
+    // 1. Build the tree, node by node. 
+    // The order in which nodes are created matters as the addresses of children
+    // nodes is used by the constructor for operator nodes.
     Node a(OPERAND, 5);
     Node b(OPERAND, 3);
     Node c(OPERAND, 2);
-    Node plus(OPERATOR, ADD, &a,&b);
-    Node minus(OPERATOR, SUB,&plus,&c);
+    Node plus(OPERATOR, add, &a,&b);
+    Node minus(OPERATOR, sub,&plus,&c);
 
-    // Evaluate the tree
-    int e0 = minus.eval();
-    printf("Evaluation of example 1: (5+3) - 2 = %d\n", e0);
+    // 2. Evaluate the tree
+    int result0 = minus.eval();
 
-    /** Example 2: 
+    printf("\nEvaluation of example 1: (5+3) - 2:\n");
+    printf("--- Result: %d\n",result0);
+    printf("--- Expected: 6\n");
+
+
+    /** -----------------------------------
+        Example 2: 
+        -----------------------------------
         Expression: 3 + ( (5+9) * 2 )
         Tree:
          +               n0
@@ -101,17 +109,25 @@ int main()
         / \ 
         5 9              n5 n6
     */
+
+    // 1. Build the tree, node by node. 
+    // The order in which nodes are created matters as the addresses of children
+    // nodes is used by the constructor for operator nodes.
     Node n6(OPERAND, 5);
     Node n5(OPERAND, 9);
     Node n4(OPERAND, 2);
-    Node n3(OPERATOR, ADD,&n5,&n6);
-    Node n2(OPERATOR, MUL,&n3,&n4);
+    Node n3(OPERATOR, add,&n5,&n6);
+    Node n2(OPERATOR, mul,&n3,&n4);
     Node n1(OPERAND, 3);
-    Node n0(OPERATOR, ADD,&n1,&n2);
+    Node n0(OPERATOR, add,&n1,&n2);
 
-    // Evaluate the tree
-    int e1 = n0.eval();
-    printf("Evaluation of example 2: 3 + ( (5+9) * 2 ) = %d\n", e1);
+    // 2. Evaluate the tree
+    int result1 = n0.eval();
 
+    printf("\nEvaluation of example 2: 3 + ( (5+9) * 2 ):\n");
+    printf("--- Result: %d\n",result1);
+    printf("--- Expected: 31\n");
+
+    printf("\n");
     return 0;
 }
